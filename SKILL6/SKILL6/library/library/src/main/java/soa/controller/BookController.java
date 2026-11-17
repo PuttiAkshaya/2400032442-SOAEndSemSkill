@@ -1,0 +1,65 @@
+package soa.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import soa.model.Book;
+import soa.service.BookService;
+
+@RestController
+@RequestMapping("api/books")
+public class BookController {
+	BookService BS;
+	public BookController(BookService BS) {
+		this.BS=BS;
+	}
+	@PostMapping
+	public ResponseEntity<String> addBook(@RequestBody Book book){
+		String message=BS.addBook(book);
+		return new ResponseEntity<>(message, HttpStatus.CREATED);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getBookById(@PathVariable Long id) {
+	    Book book = BS.getBookById(id);
+
+	    if (book == null) {
+	        return ResponseEntity
+	                .status(HttpStatus.NOT_FOUND)
+	                .body("Book not found");
+	    }
+
+	    return ResponseEntity.ok(book);
+	}
+	@GetMapping
+	public ResponseEntity<?> getAllBooks() {
+	    return ResponseEntity.ok(BS.getAllBooks());
+	}
+	// 4. UPDATE BOOK
+	@PutMapping("/{id}")
+	public ResponseEntity<Book> updateBook(
+	@PathVariable Long id,
+	@RequestBody Book book) {
+
+	Book updatedBook =BS.updateBook(id, book);
+	return ResponseEntity.ok(updatedBook);
+	}
+
+
+	// 5. DELETE BOOK
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteBook(
+	@PathVariable Long id) {
+	BS.deleteBook(id);
+	return ResponseEntity.ok("Book deleted successfully");
+	}
+}
